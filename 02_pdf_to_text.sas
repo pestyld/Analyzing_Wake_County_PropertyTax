@@ -44,9 +44,9 @@ run;
 /*********************************************/
 /* 5. Create a text file from the CAS table  */
 /*********************************************/
-filename wc_curr "&path/data/wc_2014-current_tax.txt";
+filename fout "&path/data/wc_tax_data_raw.txt";
 proc export data=casuser.wc_data(keep = content)
             dbms=dlm 
-	        outfile=wc_curr 
+	        outfile=fout 
             replace;
 run;

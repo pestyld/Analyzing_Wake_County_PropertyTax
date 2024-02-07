@@ -1,6 +1,9 @@
-/***************************************/
-/* WAKE COUNTY PROPERTY TAX ANALYSIS   */
-/***************************************/
+/***************************************************/
+/* WAKE COUNTY PROPERTY TAX ANALYSIS               */
+/***************************************************/
+/* DOWNLOAD PDF FILES FROM THE WAKE COUNTY WEBSITE */
+/***************************************************/
+
 
 /******************************************/
 /* 1. FIND PATH FOR THE PROJECT FOLDER    */
@@ -22,17 +25,30 @@
 /* b. 2013 and Prior: https://s3.us-west-1.amazonaws.com/wakegov.com.if-us-west-1/s3fs-public/documents/2023-06/PriorTaxRates2013back.pdf */
 
 
-/* a. Download Current Year to 2014 PDf and save to SAS Viya */
+/* Macro variables with links to the PDF files on the Wake County website */
+%let pdf_2014_to_curr = https://s3.us-west-1.amazonaws.com/wakegov.com.if-us-west-1/s3fs-public/documents/2023-06/TaxRates2023.pdf;
+%let pdf_1987_to_2013 = https://s3.us-west-1.amazonaws.com/wakegov.com.if-us-west-1/s3fs-public/documents/2023-06/PriorTaxRates2013back.pdf;
 
-/* Link to the PDF file */
-%let pdf_curr_to_2014 = https://s3.us-west-1.amazonaws.com/wakegov.com.if-us-west-1/s3fs-public/documents/2023-06/TaxRates2023.pdf;
 
+/* Download 2014 - Current PDF */
 /* Path and name of the PDF file to create */
-filename cur_pdf "&path/pdf_files/wc_property_2014-current.pdf";
+filename pdf_file "&path/pdf_files/wc_property_2014-current.pdf";
 
 /* Download PDF file from the internet and save it in SAS */
 proc http
- 	url="&pdf_curr_to_2014"
+ 	url="&pdf_2014_to_curr"
  	method="get" 
-	out=cur_pdf;
+	out=pdf_file;
+run;
+
+
+/* Download 1987 - 2013 PDF */
+/* Path and name of the PDF file to create */
+filename pdf_file "&path/pdf_files/wc_property_1987-2013.pdf";
+
+/* Download PDF file from the internet and save it in SAS */
+proc http
+ 	url="&pdf_1987_to_2013"
+ 	method="get" 
+	out=pdf_file;
 run;

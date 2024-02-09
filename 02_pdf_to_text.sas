@@ -44,8 +44,16 @@ run;
 /*********************************************/
 /* 5. Create a text file from the CAS table  */
 /*********************************************/
-filename fout "&path/data/wc_tax_data_raw.txt";
-proc export data=casuser.wc_data(keep = content)
+filename fout "&path/data/wc_tax_data_2014_curr_raw.txt";
+proc export data=casuser.wc_data(keep = content obs=1)
+            dbms=dlm 
+	        outfile=fout 
+            replace;
+run;
+
+
+filename fout "&path/data/wc_tax_data_1987_2013_raw.txt";
+proc export data=casuser.wc_data(keep = content firstobs=2)
             dbms=dlm 
 	        outfile=fout 
             replace;

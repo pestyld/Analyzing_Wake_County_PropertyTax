@@ -1,41 +1,3 @@
-/***************************************/
-/* WAKE COUNTY PROPERTY TAX ANALYSIS   */
-/***************************************/
-
-/* Dynamically finds the current directory path based on where the program is saved and stores it in 
-   the path macro variable. Valid in SAS Studio. Otherwise specify your path.  */
-%let fileName =  /%scan(&_sasprogramfile,-1,'/');  
-%let path = %sysfunc(tranwrd(&_sasprogramfile, &fileName,));
-
-%put &=path;
-
-
-
-/***********************************************/
-/* 6. Clean the unstructured text              */
-/***********************************************/
-
-/* Input text file */
-filename f_in "&path/data/wc_tax_data_2014_curr_raw.txt";
-
-/****************************************************************/
-/* a. Dynamically find the first year and last year in the data */
-/****************************************************************/
-data _null_;
-	infile f_in truncover;
-	input content $2000. ;
-	if find(content, 'TAXING UNIT') > 0 then do;
-		findFirstDigit = anydigit(content);                    /* Find the first numeric value in the string */
-		yearValues = strip(substr(content, findFirstDigit));   /* Obtain all year values from the string */
-		maxYearValue = scan(yearValues, 1, ' ');               /* Find first year (max value, current year */
-	    minYearValue = scan(yearValues, -1, ' ');              /* Find minimum year */
-		call symputx('maxYear', maxYearValue);                 /* Create macro variables storing the year info */
-		call symputx('minYear', minYearValue);
-	   stop;
-	end;
-run;
-%put &=maxYear &=minYear;
-
 
 
 /* b. Clean the unstructured text */
@@ -43,11 +5,6 @@ run;
 /* Create output CSV file */
 filename f_out "&path/data/wc_2014-current_rates_clean.csv";
 
-data _null_;
-	TotalYearsColumns = &maxYear - &minYear + 1;
-	call symputx('TotalYearColumns', TotalYearsColumns);
-run;
-%put &=maxYear &=minYear &=TotalYearColumns;
 
 data wake_county_tax_2014_curr;
 	/* Read in the input text file */
@@ -147,11 +104,4 @@ run;
 
 
 proc print data=wake_county_tax_2014_curr;
-run;
-
-
-/* test import */
-proc import datafile=fout
-			dbms=csv
-			out=test replace;
 run;

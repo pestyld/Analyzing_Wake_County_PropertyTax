@@ -6,14 +6,10 @@
 /* 3. Create Caslib to the folder with the PDFs */
 /************************************************/
 
-/* Create a caslib to the PDF files */
-caslib pdfs path="&path" subdirs;
-
 /* Confirm the PDF files are available */
 proc cas;
 	table.fileInfo / 
-		path = 'pdf_files', 
-		caslib = 'pdfs' 
+		caslib = 'casuser' 
 		allfiles=true;
 quit;
 
@@ -25,8 +21,8 @@ quit;
 /* Read in all of the PDF files in the caslib as a single CAS table */
 /* Each PDF will be one row of data in the CAS table                */
 proc casutil;
-    load casdata='pdf_files'                    /* To read in all files use an empty string. For a single PDF file specify the name and extension */
-         incaslib='pdfs'                        /* The location of the PDF files to load */
+    load casdata='wake_county_tax'                 /* To read in all files use an empty string. For a single PDF file specify the name and extension */
+         incaslib='casuser'                        /* The location of the PDF files to load */
          importoptions=(fileType="document",    /* Specify document import options   */
                         fileExtList = 'PDF', 
                         tikaConv=True)           

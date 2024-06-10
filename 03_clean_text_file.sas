@@ -27,7 +27,7 @@ b. wc_2014_current
 
 
 /*****************************************
-Create structured data for wc_1987_2013
+ Create structured data for wc_1987_2013
 a. Clean wc_tax_data_1987_2013_raw.txt
 *****************************************/
 %let inputFile="&path/data/wc_tax_data_1987_2013_raw.txt";
@@ -43,7 +43,7 @@ a. Clean wc_tax_data_1987_2013_raw.txt
 
 
 /*****************************************
-Create structured data for wc_2014_curr
+ Create structured data for wc_2014_curr
 a. Clean wc_tax_data_2014_curr_raw.txt
 *****************************************/
 %let inputFile="&path/data/wc_tax_data_2014_curr_raw.txt";
@@ -85,7 +85,7 @@ create table finaltbl.wc_final_property_taxes_d as
 	select * from wc_2014_curr
 	order by CountyName, Year;
 quit;
-proc print data=wc_final_property_taxes;
+proc print data=finaltbl.wc_final_property_taxes_d;
 run;
 
 

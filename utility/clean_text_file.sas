@@ -130,7 +130,7 @@ data wc_property_values;
 	/* List contains values starting from the max year and decreasing to the min */
 	do Year=&MAXYEAR to &MINYEAR by -1;
 		counter + 1;
-		PropertyTax = scan(tax_values_cleaned,counter,',');
+		PropertyTax = input(scan(tax_values_cleaned,counter,','),best12.);
 		output;
 	end;
 
@@ -148,7 +148,7 @@ proc sql;
 	create table &final_table_name as
 	select		
 		wc.CountyName label='County Name',
-		wc.Year,
+		mdy(1,1,wc.Year) as Year format=YEAR4.,
 		ay.AppraisalYear label='Appraisal Year',
 		wc.PropertyTax label='Property Tax Rate'
 	from wc_property_values wc inner join appraisal_years ay

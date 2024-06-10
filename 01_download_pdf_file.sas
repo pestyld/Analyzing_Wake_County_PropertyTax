@@ -5,6 +5,7 @@
 *****************************************************************************
  REQUIREMENTS: 
 	- Must run the workshop/utility/utility_macros.sas program prior
+	- Must have a mounted location the CAS and Compute can access.
 ****************************************************************************/
 
 
@@ -12,29 +13,29 @@
 /******************************************
  1. REQUIRED - SET PATHS    
 ******************************************/
-/* Project folder */
+/* Gets the path of the current folder */
 %getcwd(path)
 
 
-/* Path to subdirectory in THE Casuser where the PDFs will be downloaded to */
-/* You can specify any path that the CAS + Compute server can access */
-%let pdf_outpath = /create-export/create/homes/Peter.Styliadis@sas.com/casuser/wc_pdfs;
+/********************************************************************************** 
+ PATH WHERE TO DOWNLOAD THE PDF FILES
+   - REQUIRED: You must specify any path that the CAS + Compute server can access.
+   - Path to subdirectory in the Casuser where the PDFs will be downloaded to.
+   - This environment has the Casuser path mounted and available to the Compute server in Studio.
+**********************************************************************************/
 
-
-
-/**************************************************************
- 2. CREATE SUBDIRECTORY IN THE CASUSER CASLIB TO STORE PDF FILES
- You can store the PDF files in a location CAS + Compute can access.
-**************************************************************/
 /* Create the subdirectory wc_pdfs in the Casuser caslib to store the PDF files */
 proc cas;
 	table.addCaslibSubdir / name="casuser", path="wc_pdfs";
 quit;
 
+/* Specify the path of the subdirectory */
+%let pdf_outpath = /create-export/create/homes/Peter.Styliadis@sas.com/casuser/wc_pdfs;
+
 
 
 /**********************************************************************************************************
- 3. DOWNLOAD THE PDF FILEs FROM WAKE COUNTY WEBSITE 
+ 2. DOWNLOAD THE PDF FILEs FROM WAKE COUNTY WEBSITE 
 **********************************************************************************************************
  Files can be found here: https://www.wake.gov/departments-government/tax-administration/tax-bill-help/tax-rates-fees   
 **********************************************************************************************************    
@@ -42,6 +43,7 @@ quit;
  a. Current to 2014: https://s3.us-west-1.amazonaws.com/wakegov.com.if-us-west-1/s3fs-public/documents/2023-06/TaxRates2023.pdf         
  b. 2013 and Prior: https://s3.us-west-1.amazonaws.com/wakegov.com.if-us-west-1/s3fs-public/documents/2023-06/PriorTaxRates2013back.pdf
 **********************************************************************************************************/
+
 /* Display PDF samples */
 %showImage("&path/images/wc_pdf_files.png")
 

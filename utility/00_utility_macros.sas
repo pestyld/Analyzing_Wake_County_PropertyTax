@@ -76,12 +76,12 @@
 */
 
 	%PUT NOTE: *****************************************************;
-	%PUT NOTE: Save CAS table &casTable to as a;
-	%PUT NOTE: text file: &fileOut;
+	%PUT NOTE: Save CAS table &casTable as a text file:;
+	%PUT NOTE: &fileOut;
 	%PUT NOTE: *****************************************************;
 
 	filename fout &fileOut;
-	proc export data=casuser.wc_data(where=(fileName=&pdfFile))
+	proc export data=&casTable(where=(fileName=&pdfFile))
 	            dbms=dlm 
 		        outfile=fout 
 	            replace;
@@ -111,4 +111,4 @@
 
 
 %getcwd(utility_path)
-%include "&utility_path/get_min_max_years.sas";
+%include "&utility_path/01_get_min_max_years.sas";

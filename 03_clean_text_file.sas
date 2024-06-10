@@ -11,7 +11,7 @@
 - a. wc_1987_2013
 - b. wc_2014_current
 
- Create final table for VA Report
+ Create final table for VA Report by joining the temporary tables above.
 - wc_final_property_taxes
 *****************************************************************************
  REQUIREMENTS: 
@@ -22,7 +22,7 @@
 ****************************************************************************/
 
 /********************* 
- SET PATHS 
+ SET PATH TO FOLDER
 *********************/
 %getcwd(path)
 
@@ -33,6 +33,7 @@
 a. Clean wc_tax_data_1987_2013_raw.txt
 *****************************************/
 %let inputFile="&path/data/wc_tax_data_1987_2013_raw.txt";
+
 %let final_table_name=wc_1987_2013;
 
 /* Dynamically find the first year and last year in the data */
@@ -78,22 +79,23 @@ run;
 */
 
 /* Final table location - Save to a place the CAS server can access */
-libname finaltbl "/create-export/create/homes/Peter.Styliadis@sas.com/casuser";
+%let final_table_output =/create-export/create/homes/Peter.Styliadis@sas.com/casuser ;
+libname finaltbl "&final_table_output";
 
 proc sql;
-create table finaltbl.wc_final_property_taxes_d as
+create table finaltbl.wc_final_property_taxes as
 	select * from wc_1987_2013
 	union
 	select * from wc_2014_curr
 	order by CountyName, Year;
 quit;
-proc print data=finaltbl.wc_final_property_taxes_d;
+proc print data=finaltbl.wc_final_property_taxes;
 run;
 
 
 
 /* 
- This method assumes the compute Server and CAS server don't have a mounted location they can both access
+ This method assumes the Compute Server and CAS server don't have a mounted location they can both access
 */
 
 /* Create the table in the WORK library (or any other Compute library) */
@@ -104,6 +106,7 @@ create table work.wc_final_property_taxes as
 	select * from wc_2014_curr
 	order by CountyName, Year;
 quit;
+
 
 /* Load the table in the SAS library to CAS and save as a sashdat file */
 proc casutil;

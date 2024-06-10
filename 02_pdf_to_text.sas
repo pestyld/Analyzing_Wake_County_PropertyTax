@@ -5,16 +5,17 @@
 *****************************************************************************
  REQUIREMENTS: 
 	- Must run the 
-		- workshop/utility/utility_macros.sas program prior
+		- workshop/utility/00_utility_macros.sas program prior
 	    - 01_download_pdf_files.sas
 ****************************************************************************/
 
 
 /************************************************
- 4. LOAD PDF FILES INTO CAS AS A TABLE             
+ 3. LOAD PDF FILES INTO CAS AS A TABLE             
 ************************************************/
-/* Read in all of the PDF files in the caslib as a single CAS table */
+/* Read in all of the PDF files in from the caslib path as a single CAS table */
 /* Each PDF will be one row of data in the CAS table                */
+
 
 %let caslibLocation = 'casuser';
 %let subdirectoryLocation = 'wc_pdfs';

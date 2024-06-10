@@ -8,9 +8,11 @@
 - b. wc_tax_data_2014_curr_raw.txt
 
  Create the structured tables in a SAS library:
-a. wc_1987_2013
-b. 
-b. wc_2014_current
+- a. wc_1987_2013
+- b. wc_2014_current
+
+ Create final table for VA Report
+- wc_final_property_taxes
 *****************************************************************************
  REQUIREMENTS: 
 	- Must run the 
@@ -96,7 +98,7 @@ run;
 
 /* Create the table in the WORK library (or any other Compute library) */
 proc sql;
-create table work.wc_final_property_taxes_d as
+create table work.wc_final_property_taxes as
 	select * from wc_1987_2013
 	union
 	select * from wc_2014_curr
@@ -106,8 +108,8 @@ quit;
 /* Load the table in the SAS library to CAS and save as a sashdat file */
 proc casutil;
 	/* Load SAS library table as a CAS table */
-	load data=work.wc_final_property_taxes_d
-		 casout='wc_final_property_taxes_save' outcaslib='casuser';
+	load data=work.wc_final_property_taxes
+		 casout='wc_final_property_taxes_save' outcaslib='casuser' replace;
 
 	/* Save as sashdat file */
 	save casdata='wc_final_property_taxes_save' incaslib='casuser'

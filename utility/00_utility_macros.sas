@@ -90,5 +90,25 @@
 %mend;
 
 
+
+
+/******************************************
+ DISPLAY IMAGE
+******************************************/
+/* 
+    The macro renders images in the SAS notebook or SAS results.
+
+    Parameter:
+        image - specify the full path and file name within quotes.
+*/
+%macro showImage(image);
+
+    data _null_;
+        declare odsout obj();
+        obj.image(file:&image);
+    run;
+%mend;
+
+
 %getcwd(utility_path)
 %include "&utility_path/get_min_max_years.sas";

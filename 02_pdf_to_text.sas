@@ -41,6 +41,7 @@ run;
 
 /*********************************************
  5. CREATE TXT FILES FROM THE CAS TABLES 
+ - Macro found in utility/00_utility_macro.sas
 *********************************************/
 %pdf_to_txt(casTable=casuser.wc_data,
 			pdfFile = "wc_property_2014-current.pdf",

@@ -10,13 +10,13 @@
 
 
 /******************************************
- 1. SET PATHS    
+ 1. REQUIRED - SET PATHS    
 ******************************************/
 /* Project folder */
 %getcwd(path)
 
 
-/* Path to subdirectory in Casuser where the PDFs will be downloaded to */
+/* Path to subdirectory in THE Casuser where the PDFs will be downloaded to */
 /* You can specify any path that the CAS + Compute server can access */
 %let pdf_outpath = /create-export/create/homes/Peter.Styliadis@sas.com/casuser/wc_pdfs;
 
@@ -26,7 +26,7 @@
  2. CREATE SUBDIRECTORY IN THE CASUSER CASLIB TO STORE PDF FILES
  You can store the PDF files in a location CAS + Compute can access.
 **************************************************************/
-/* Create subdirectory wc_pdfs in the Casuser caslib to store the PDF files */
+/* Create the subdirectory wc_pdfs in the Casuser caslib to store the PDF files */
 proc cas;
 	table.addCaslibSubdir / name="casuser", path="wc_pdfs";
 quit;
@@ -42,6 +42,9 @@ quit;
  a. Current to 2014: https://s3.us-west-1.amazonaws.com/wakegov.com.if-us-west-1/s3fs-public/documents/2023-06/TaxRates2023.pdf         
  b. 2013 and Prior: https://s3.us-west-1.amazonaws.com/wakegov.com.if-us-west-1/s3fs-public/documents/2023-06/PriorTaxRates2013back.pdf
 **********************************************************************************************************/
+/* Display PDF samples */
+%showImage("&path/images/wc_pdf_files.png")
+
 
 /* Macro variables with links to the PDF files on the Wake County website */
 %let pdf_2014_to_curr = https://s3.us-west-1.amazonaws.com/wakegov.com.if-us-west-1/s3fs-public/documents/2023-06/TaxRates2023.pdf;

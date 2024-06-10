@@ -1,157 +1,115 @@
-/***************************************/
-/* WAKE COUNTY PROPERTY TAX ANALYSIS   */
-/***************************************/
+/****************************************************************************
+ WAKE COUNTY PROPERTY TAX ANALYSIS               
+*****************************************************************************
+ 03 - CLEAN UNSTRUCTURED TEXT
+*****************************************************************************
+ Clean the following files:
+- a. wc_tax_data_1987_2013_raw.txt
+- b. wc_tax_data_2014_curr_raw.txt
 
-/* Dynamically finds the current directory path based on where the program is saved and stores it in 
-   the path macro variable. Valid in SAS Studio. Otherwise specify your path.  */
-%let fileName =  /%scan(&_sasprogramfile,-1,'/');  
-%let path = %sysfunc(tranwrd(&_sasprogramfile, &fileName,));
+ Create the structured tables in a SAS library:
+a. wc_1987_2013
+b. 
+b. wc_2014_current
+*****************************************************************************
+ REQUIREMENTS: 
+	- Must run the 
+		- workshop/utility/00_utility_macros.sas program prior
+	    - 01_download_pdf_files.sas
+		- 02_pdf_to_text.sas
+****************************************************************************/
 
-%put &=path;
+/********************* 
+ SET PATHS 
+*********************/
+%getcwd(path)
 
 
 
-/***********************************************/
-/* 6. Clean the unstructured text              */
-/***********************************************/
+/*****************************************
+Create structured data for wc_1987_2013
+a. Clean wc_tax_data_1987_2013_raw.txt
+*****************************************/
+%let inputFile="&path/data/wc_tax_data_1987_2013_raw.txt";
+%let final_table_name=wc_1987_2013;
 
-/* Input text file */
-filename f_in "&path/data/wc_tax_data_2014_curr_raw.txt";
+/* Dynamically find the first year and last year in the data */
+%get_max_min_years(inputFile=&inputFile)
 
-/****************************************************************/
-/* a. Dynamically find the first year and last year in the data */
-/****************************************************************/
-data _null_;
-	infile f_in truncover;
-	input content $2000. ;
-	if find(content, 'TAXING UNIT') > 0 then do;
-		findFirstDigit = anydigit(content);                    /* Find the first numeric value in the string */
-		yearValues = strip(substr(content, findFirstDigit));   /* Obtain all year values from the string */
-		maxYearValue = scan(yearValues, 1, ' ');               /* Find first year (max value, current year */
-	    minYearValue = scan(yearValues, -1, ' ');              /* Find minimum year */
-		call symputx('maxYear', maxYearValue);                 /* Create macro variables storing the year info */
-		call symputx('minYear', minYearValue);
-	   stop;
-	end;
+/* Run clean data program - Future create macro program */
+/* Leave as is for debugging purposes during workshop */
+%include "&path/utility/clean_text_file.sas";
+
+
+
+/*****************************************
+Create structured data for wc_2014_curr
+a. Clean wc_tax_data_2014_curr_raw.txt
+*****************************************/
+%let inputFile="&path/data/wc_tax_data_2014_curr_raw.txt";
+%let final_table_name=wc_2014_curr;
+
+/* Dynamically find the first year and last year in the data */
+%get_max_min_years(inputFile=&inputFile)
+
+%include "&path/utility/clean_text_file.sas";
+
+
+
+/*************************************************************
+ CREATE FINAL TABLE BY CONCATENATING THE TWO CLEANED TABLES
+*************************************************************
+ - The Casuser caslib location has been mounted to the Compute server.
+ - This means that CAS + Compute can access that path.
+ - That might not always be the case. I'll show you both ways to save it for CAS.
+*************************************************************/
+
+/* Preview clean structured tables */
+proc print data=wc_1987_2013;
 run;
-%put &=maxYear &=minYear;
-
-
-
-/* b. Clean the unstructured text */
-
-/* Create output CSV file */
-filename f_out "&path/data/wc_2014-current_rates_clean.csv";
-
-data _null_;
-	TotalYearsColumns = &maxYear - &minYear + 1;
-	call symputx('TotalYearColumns', TotalYearsColumns);
+proc print data=wc_2014_curr;
 run;
-%put &=maxYear &=minYear &=TotalYearColumns;
-
-data wake_county_tax_2014_curr;
-	/* Read in the input text file */
-	infile f_in truncover;
-
-	/* Read in entire string into a single column */
-	input content $2000.;
-
-	/* Set lengths */
-	length values_cleaned_csv $200.  
-           new_first_row_col_values $200.;
-
-	/* Create the total number of years column to use to identify if extra values are in the tax rates */
-	retain TotalYears &TotalYearColumns
-           start_read_flag 999; /* <-- dummy start number */
-
-	/* Only read in lines that have text */
-	if length(content) > 1;
-
-	/* Start processing text after the Tax Rates column */
-	if find(content, 'Tax Rates') > 0 then start_read_flag = _N_;
 
 
-	/* 1. Delete the first four rows that contains random text info */
-	if _N_ > start_read_flag;
+/* 
+ This method assumes The Casuser caslib location has been mounted and available to the Compute server as well as CAS 
+*/
 
-	/* 2. Remove leading and trailing blanks from content */
-	content = strip(content);
+/* Final table location - Save to a place the CAS server can access */
+libname finaltbl "/create-export/create/homes/Peter.Styliadis@sas.com/casuser";
 
-	/******* 3. Find the taxing unit in the unstructured text *******/
-
-	/* 3a. Search for the first character position going right to left */
-	find_first_character = anyalpha(content, -length(content)) + 1;
-
-	/* 3b. Extract the taxing unit county */
-	county_name = substr(content, 1, find_first_character);
-
-	/******** 4. Obtain the taxing values by year *******/
-
-	/* 4a. Extract taxing values */
-	values = strip(substr(content, find_first_character));
-	
-	/* 4b. Replace blanks with commas */
-	values = tranwrd(strip(values), ' ', ',');
-
-	/* 4c. Count the number of values. This occurs because additional info is in the text for some counties */
-	num_of_values = countw(values,',');
-
-	/* 4d. Loop over values for each county and extract only tax values */
-	if totalYears ne num_of_values then do;
-		do value_position = 1 to num_of_values;
-			find_value = scan(values, value_position, ',');
-			if find_value < 1 then values_cleaned_csv = catx(',',values_cleaned_csv, find_value);
-		end;
-	end;
-	else do;
-		values_cleaned_csv = values;
-	end;
-
-
-	/******* 5. Rename first row and add Year<yearnum> for wide csv file *******/
-	if upcase(County_name) = 'TAXING UNIT' then do;
-
-		/* 5a. Add underscore to Taxing_Unit */
-		County_Name = tranwrd(strip(County_Name),' ','_');
-
-		/* 5b. Add 'Year' prior to the year values to avoid column name issues */
-		do value_position = 1 to num_of_values;
-			find_value = scan(values, value_position, ',');
-			new_value_with_year = cats('Year',find_value);
-			new_first_row_col_values = catx(',', new_first_row_col_values, new_value_with_year);
-		end;
-		values_cleaned_csv = new_first_row_col_values;
-
-	end;
-
-	/* 6. Combine taxing unit county and tax values */
-	values_cleaned_csv = catx(',',county_name,values_cleaned_csv);
-
-	/* 7. a. Create output data to a SAS table and text file       */
-    /*    b. Stop DATA step when a blank row is encountered        */
-	file f_out;
-
-	if substr(strip(content),1,1) = '*' then do;
-		stop;
-	end;
-	else if length(content) > 1 then do;
-		output;
-		put values_cleaned_csv;
-	end;
-
-
-	/* 8. Drop unnecessary columns */
-/* 	drop ; */
+proc sql;
+create table finaltbl.wc_final_property_taxes_d as
+	select * from wc_1987_2013
+	union
+	select * from wc_2014_curr
+	order by CountyName, Year;
+quit;
+proc print data=wc_final_property_taxes;
 run;
 
 
 
-proc print data=wake_county_tax_2014_curr;
-run;
+/* 
+ This method assumes the compute Server and CAS server don't have a mounted location they can both access
+*/
 
+/* Create the table in the WORK library (or any other Compute library) */
+proc sql;
+create table work.wc_final_property_taxes_d as
+	select * from wc_1987_2013
+	union
+	select * from wc_2014_curr
+	order by CountyName, Year;
+quit;
 
-/* test import */
-proc import datafile=fout
-			dbms=csv
-			out=test replace;
-run;
+/* Load the table in the SAS library to CAS and save as a sashdat file */
+proc casutil;
+	/* Load SAS library table as a CAS table */
+	load data=work.wc_final_property_taxes_d
+		 casout='wc_final_property_taxes_save' outcaslib='casuser';
+
+	/* Save as sashdat file */
+	save casdata='wc_final_property_taxes_save' incaslib='casuser'
+		 casout='wc_final_property_taxes.sashdat' outcaslib='casuser' replace;
+quit;

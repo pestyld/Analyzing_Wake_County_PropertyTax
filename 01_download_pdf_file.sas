@@ -1,19 +1,40 @@
-/***************************************************/
-/* WAKE COUNTY PROPERTY TAX ANALYSIS               */
-/***************************************************/
-/* DOWNLOAD PDF FILES FROM THE WAKE COUNTY WEBSITE */
-/***************************************************/
+/****************************************************************************
+ WAKE COUNTY PROPERTY TAX ANALYSIS               
+*****************************************************************************
+ 01 - DOWNLOAD PDF FILES FROM THE WAKE COUNTY WEBSITE 
+*****************************************************************************
+ REQUIREMENTS: 
+	- Must run the workshop/utility/utility_macros.sas program prior
+****************************************************************************/
+
 
 
 /******************************************
- 1. FIND PATH FOR THE PROJECT FOLDER    
+ 1. SET PATHS    
 ******************************************/
+/* Project folder */
 %getcwd(path)
+
+
+/* Path to subdirectory in Casuser where the PDFs will be downloaded to */
+/* You can specify any path that the CAS + Compute server can access */
+%let pdf_outpath = /create-export/create/homes/Peter.Styliadis@sas.com/casuser/wc_pdfs;
+
+
+
+/**************************************************************
+ 2. CREATE SUBDIRECTORY IN THE CASUSER CASLIB TO STORE PDF FILES
+ You can store the PDF files in a location CAS + Compute can access.
+**************************************************************/
+/* Create subdirectory wc_pdfs in the Casuser caslib to store the PDF files */
+proc cas;
+	table.addCaslibSubdir / name="casuser", path="wc_pdfs";
+quit;
 
 
 
 /**********************************************************************************************************
- 2. DOWNLOAD THE PDF FILEs FROM WAKE COUNTY WEBSITE 
+ 3. DOWNLOAD THE PDF FILEs FROM WAKE COUNTY WEBSITE 
 **********************************************************************************************************
  Files can be found here: https://www.wake.gov/departments-government/tax-administration/tax-bill-help/tax-rates-fees   
 **********************************************************************************************************    
@@ -29,8 +50,8 @@
 
 /* Download 1987 - 2013 PDF */
 %download_pdf(pdf_url="&pdf_1987_to_2013", 
-              save_file="&path/pdf_files/wc_property_1987_2013.pdf")
+              save_file="&pdf_outpath/wc_property_1987_2013.pdf")
 
 /* Download 2014 - Current PDF */
 %download_pdf(pdf_url="&pdf_2014_to_curr", 
-              save_file="&path/pdf_files/wc_property_2014-current.pdf")
+              save_file="&pdf_outpath/wc_property_2014-current.pdf")

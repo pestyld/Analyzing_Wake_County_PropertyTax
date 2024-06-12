@@ -50,6 +50,7 @@ a. Clean wc_tax_data_1987_2013_raw.txt
 a. Clean wc_tax_data_2014_curr_raw.txt
 *****************************************/
 %let inputFile="&path/data/wc_tax_data_2014_curr_raw.txt";
+
 %let final_table_name=wc_2014_curr;
 
 /* Dynamically find the first year and last year in the data */
@@ -62,9 +63,10 @@ a. Clean wc_tax_data_2014_curr_raw.txt
 /*************************************************************
  CREATE FINAL TABLE BY CONCATENATING THE TWO CLEANED TABLES
 *************************************************************
- - The Casuser caslib location has been mounted to the Compute server.
- - This means that CAS + Compute can access that path.
- - That might not always be the case. I'll show you both ways to save it for CAS.
+This exmaple the Casuser caslib location has been mounted to the Compute server.
+This means that CAS + Compute can access that path.
+
+That might not always be the case. I'll show you both ways to save it for CAS.
 *************************************************************/
 
 /* Preview clean structured tables */
@@ -75,11 +77,11 @@ run;
 
 
 /* 
- This method assumes The Casuser caslib location has been mounted and available to the Compute server as well as CAS 
+ This method assumes the Casuser caslib location has been mounted and available to the Compute server as well as CAS 
 */
 
 /* Final table location - Save to a place the CAS server can access */
-%let final_table_output =/create-export/create/homes/Peter.Styliadis@sas.com/casuser ;
+%let final_table_output =%sysget(HOME)/casuser ;
 libname finaltbl "&final_table_output";
 
 proc sql;

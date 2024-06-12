@@ -17,10 +17,11 @@
 %getcwd(path)
 
 
+
 /********************************************************************************** 
  PATH WHERE TO DOWNLOAD THE PDF FILES
    - REQUIRED: You must specify any path that the CAS + Compute server can access.
-   - Path to subdirectory in the Casuser where the PDFs will be downloaded to.
+   - (wc_pdfs) Is a path to a subdirectory in the Casuser where the PDFs will be downloaded to.
    - This environment has the Casuser path mounted and available to the Compute server in Studio.
 **********************************************************************************/
 
@@ -29,9 +30,9 @@ proc cas;
 	table.addCaslibSubdir / name="casuser", path="wc_pdfs";
 quit;
 
-/* Specify the path of the subdirectory */
-%let pdf_outpath = /create-export/create/homes/Peter.Styliadis@sas.com/casuser/wc_pdfs;
-
+/* REQUIRED - Specify the path of the subdirectory */
+%let pdf_outpath =%sysget(HOME)/casuser/wc_pdfs;
+%put &=pdf_outpath;
 
 
 /**********************************************************************************************************

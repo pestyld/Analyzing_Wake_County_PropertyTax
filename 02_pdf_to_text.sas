@@ -11,16 +11,19 @@
 
 
 /************************************************
- 3. LOAD PDF FILES INTO CAS AS A TABLE             
+ 3. LOAD PDF FILES INTO CAS AS A TABLE  
+ - This will extract the text and place it in a single column.           
 ************************************************/
 /* Read in all of the PDF files in from the caslib path as a single CAS table */
 /* Each PDF will be one row of data in the CAS table                */
 
 
+/* Set locations of PDF files */
 %let caslibLocation = 'casuser';
 %let subdirectoryLocation = 'wc_pdfs';
 
 
+/* Load PDF files as text in a CAS table */
 proc casutil;
     load casdata=&subdirectoryLocation         /* To read in all files use in subdirectory. For a single PDF file specify the name and extension */
          incaslib=&caslibLocation              /* The location of the PDF files to load */
@@ -43,6 +46,7 @@ run;
 /*********************************************
  5. CREATE TXT FILES FROM THE CAS TABLES 
  - Macro found in utility/00_utility_macro.sas
+ - Simply take the CAS table and create a .txt file with everything
 *********************************************/
 %pdf_to_txt(casTable=casuser.wc_data,
 			pdfFile = "wc_property_2014-current.pdf",

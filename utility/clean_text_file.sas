@@ -71,7 +71,7 @@ data work.get_property_values;
 	num_of_values = countw(original_values,',');
 
 	/* 2d. Loop over values for each county and extract only tax values */
-	if totalYears ne num_of_values then do;
+	if TotalYears ne num_of_values then do;
 		do value_position = 1 to num_of_values;
 			find_value = scan(original_values, value_position, ',');
 			
@@ -104,7 +104,7 @@ data appraisal_years;
 	set get_property_values(obs=1);
 	
 	/* Loop over the max year to the min year by 1 year */
-	do Year=&MAXYEAR to &MINYEAR by -1;
+	do Year=&maxYear to &minYear by -1;
 		counter + 1;
 		get_year_value = scan(tax_values_cleaned,counter,',');
 
@@ -121,6 +121,8 @@ proc print data=appraisal_years;
 run;
 
 
+
+
 /* Create narrow table with county/year/property tax */
 data wc_property_values;
 	set get_property_values(firstobs=2); /* Skip over TAXING UNIT - YEARS row */
@@ -128,7 +130,7 @@ data wc_property_values;
 	counter = 0;
 
 	/* List contains values starting from the max year and decreasing to the min */
-	do Year=&MAXYEAR to &MINYEAR by -1;
+	do Year=&maxYear to &minYear by -1;
 		counter + 1;
 		PropertyTax = input(scan(tax_values_cleaned,counter,','),best12.);
 		output;

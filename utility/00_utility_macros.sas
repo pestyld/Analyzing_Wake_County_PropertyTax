@@ -27,9 +27,9 @@
 
 
 
-/******************************************
+/**********************************************************
  DOWNLOAD PDF FILES FROM THE INTERNET AND SAVE TO VIYA 
-******************************************/
+**********************************************************/
 /* Saves a PDF file from the internet to the SAS Viya environment to the specified path. */
 
 %macro download_pdf(pdf_url, save_file);
@@ -110,5 +110,9 @@
 %mend;
 
 
+
+/*********************************
+ RUN THE OTHER MACRO PROGRAM
+*********************************/
 %getcwd(utility_path)
 %include "&utility_path/01_get_min_max_years.sas";

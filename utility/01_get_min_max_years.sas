@@ -4,8 +4,16 @@
 
 %macro get_max_min_years(inputFile);
 /*
-	inputFile (str) : File name and path of input extracted PDF text file.
-	outputFile (str) : Final CSV file name and path.
+	Creates the maxYearValue and minYearValue global macro variables to dynamically read in the
+    unstructured text files to determine the number of columns to create.
+
+	args:
+		inputFile (str) : File name and path of input extracted text file.
+
+	returns:
+		- maxYear macro variable - Finds max year.
+		- minYear macro variable - Finds min year.
+		- TotalYearColumns - maxYear - minYear + 1 for total number of years in data.
 */
 
 	%global maxYear minYear TotalYearColumns;

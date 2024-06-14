@@ -91,9 +91,11 @@ create table finaltbl.wc_final_property_taxes as
 	select * from wc_2014_curr
 	order by CountyName, Year;
 quit;
+
+title height=16pt "Preview of the Final Table";
 proc print data=finaltbl.wc_final_property_taxes;
 run;
-
+title;
 
 
 /* 
